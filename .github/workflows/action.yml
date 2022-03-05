@@ -26,6 +26,8 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: run script
       env:
-        QDU_INFO: ${{ secrets.QDU_INFO }}
+        PHONE: ${{ secrets.PHONE }}
+        PASSWORD: ${{ secrets.PASSWORD }}
+        KEYWORD: ${{ secrets.KEYWORD }}
       run: |
         python tiwen.py
