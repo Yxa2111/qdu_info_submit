@@ -42,6 +42,15 @@ class signin:
         self.s.headers.update({'Cookie': cook})
         return self
 
+def get_resp_data(resp, name):
+    try:
+        if resp['FeedbackCode'] == 0 and 'Data' in resp:
+            return resp['Data']
+        else:
+            raise RuntimeError(name, " get response format error ", resp)
+    except:
+        raise RuntimeError(name, " get response format error ", resp)
+
 
 class report:
     def __init__(self, usr: str, pwd: str):
@@ -68,7 +77,22 @@ class report:
         self.si.login()
         # 获取报体温页面TaskCode
 
-    def get_taskcode(self):
+    def request(self, router):
+        # 拼凑请求头
+        thisHeader = self.headers
+        # thisHeader.update({'Content-Length': '88'})
+        thisHeader.update({'AccessToken': self.si.s.headers.get("AccessToken")})
+        thisHeader.update(
+            {'Cookie': str(self.si.s.headers.get("AccessToken")) + "; " + str(self.si.s.headers.get("Cookie"))})
+        # 请求内容
+        querystring = {
+            "Router": router,
+            "Method": 'POST',
+            "Body": '{"UID":""}'
+        }
+        return requests.post(self.url, headers=thisHeader, json=querystring, verify=False).json()
+
+    def select_task(self, filter_keyword=None):
         # 拼凑请求头
         thisHeader = self.headers
         # thisHeader.update({'Content-Length': '88'})
@@ -81,15 +105,29 @@ class report:
             "Method": 'POST',
             "Body": '{"UID":""}'
         }
-        rep = requests.post(self.url, headers=thisHeader, json=querystring, verify=False)
-        # 正则表达式获取taskcode
-        notdealtaskcode = re.search("TaskCode(.*?)\",\"T", rep.text).group()
-        taskcode = re.sub("TaskCode\":\"", "", notdealtaskcode)
-        TaskCode = re.sub("\",\"T", "", taskcode)
-        return TaskCode
+        rep = requests.post(self.url, headers=thisHeader, json=querystring, verify=False).json()
+        data = get_resp_data(rep, 'select_task')
+        selected_item = data['list'][0]
+        if filter_keyword:
+            for item in data['list']:
+                if filter_keyword in item['Title']:
+                    selected_item = item
+                    break
+        print(f"select Title: {selected_item['Title']} TaskCode: {selected_item['TaskCode']} filter_keyword: {filter_keyword}")
+        return selected_item['TaskCode'], selected_item['BusinessId']
+    
+    def get_baseinfo(self):
+        data = get_resp_data(self.request('/api/system/getuserbaseinfo'), 'get_baseinfo')
+        return (
+            data['Name'],
+            data['UserCode'],
+            data['AcademyName'],
+            data['ClassName'],
+            data['MajorName']
+        )
 
 
-def push_request(phone: str, password: str, name: str, stuID: str, academy: str, className:str):
+def push_request(phone: str, password: str, filter_keyword=None):
     repo = report(phone, password)
     # 拼凑请求头
     thisHeader = {
@@ -138,25 +176,31 @@ def push_request(phone: str, password: str, name: str, stuID: str, academy: str,
                                                                           "\"TaskCode\":\"aa\",\"TemplateId\":\"cc\"}"}
     body = json.loads(data["Body"])
     # 替换taskcode
-    body["TaskCode"] = repo.get_taskcode()
+    body["TaskCode"], body["TemplateId"] = repo.select_task(filter_keyword)
+    name, stuID, academy, className, majorName = repo.get_baseinfo()
     body["Field"][4]["Content"] = stuID
     body["Field"][5]["Content"] = name
     body["Field"][0]["Content"] = academy
     body["Field"][1]["Content"] = stuID[0:4]
     body["Field"][3]["Content"] = className
+    body["Field"][2]["Content"] = majorName
     body = json.dumps(body,ensure_ascii=False)
     data["Body"] = body
     # data["Body"] = data["Body"]
     print(data)
     # 发请求
     req = requests.post("https://h5api.xiaoyuanjijiehao.com/api/staff/interface", json=data, headers=thisHeader,verify=False)
-    if req.json()["FeedbackText"] == '成功':
+    if req.json()["FeedbackCode"] == 0:
         return True
     return False
 
 def main():
-    option = json.loads(os.getenv('QDU_INFO'))
-    result = push_request(**option)
+    options = {
+        'phone': os.getenv('PHONE'),
+        'password': os.getenv('PASSWORD'),
+        'filter_keyword': os.getenv('KEYWORD')
+    }
+    result = push_request(**options)
     print(result)
     if not result:
         exit(-1)
