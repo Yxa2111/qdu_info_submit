@@ -17,18 +17,9 @@ some of api request is based on [antlinkercampus](https://github.com/jj4/antlink
 
 ![](imgs/open_action.png)
 
-4. 在刚刚的Settings里，点击Scrects，然后点击右边的`New Repository Screct`按钮，添加一个新的screct。Name中填`QDU_INFO`，然后把下面的内容填好，粘贴进`Value`里。
+4. 在刚刚的Settings里，点击Scrects，然后点击右边的`New Repository Screct`按钮，添加一个新的screct。Name中填`PHONE`，Value中填你的`your phone number here which registered 校园集结号`
 
-```
-{
-    "phone": "your phone number here which registered 校园集结号",
-    "password": "your password",
-    "name": "your name",
-    "stuID": "your student ID like 2016207711",
-    "academy": "your academy like '计算机科学与技术学院'",
-    "className": "your class name like 16软件"
-}
-```
+5. 遵循上面的步骤，分别填写Name为`PASSWORD`，Value为`your password`的screct和Name为`KEYWORD`，Value为`体温`的screct。
 
 5. enjoy it! 你可以随便push一个commit来触发action，或者点击右上角的`star`来触发，看下结果如何。之后的运行结果可以在Actions里看到，每天大概四小时运行一次。
 
