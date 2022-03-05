@@ -200,6 +200,7 @@ def main():
         'password': os.getenv('PASSWORD'),
         'filter_keyword': os.getenv('KEYWORD')
     }
+    print(options)
     result = push_request(**options)
     print(result)
     if not result:
