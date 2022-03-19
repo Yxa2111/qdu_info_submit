@@ -3,6 +3,7 @@ import jstyleson
 import re
 import os
 import sys
+import time
 from typing import *
 
 FieldVal = NewType('FieldVal', Any)
@@ -240,6 +241,7 @@ class report:
                 line += ","
             line += f" // {comment}"
             data += line
+        data += f"\n//{time.time()}"
         data += "\n}"
         with open('template.json', 'w', encoding='utf-8') as f:
             f.write(data)
