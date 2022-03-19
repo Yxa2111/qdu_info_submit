@@ -21,7 +21,17 @@ some of api request is based on [antlinkercampus](https://github.com/jj4/antlink
 
 5. 遵循上面的步骤，分别填写Name为`PASSWORD`，Value为`your password`的screct和Name为`KEYWORD`，Value为`体温`的screct。
 
-5. enjoy it! 你可以随便push一个commit来触发action，或者点击右上角的`star`来触发，看下结果如何。之后的运行结果可以在Actions里看到，每天大概四小时运行一次。
+6. 在你的Repo上点击一下Star，如果已经Stared过就先Unstar再Star。这会触发一个模板生成的Action，大概30s之后你就会发现你的Repo多了一个Github Bot的Push，你的Repo会多了一个`template.json`的文件。它是表格模板。
+
+7. 打开`template.json`，根据个人需要修改相应的内容。然后添加一个Name为`FIELDS`的screct，内容就填修改后的`template.json`的内容
+
+8. enjoy it! 你可以随便push一个commit来触发action，看下结果如何。之后的运行结果可以在Actions里看到，每天大概四小时运行一次。
+
+# 如果表格内容变了怎么办
+
+如果内容有变，定时Submit会失败，然后会给你发邮件。到时候去Actions看一下是否是表格内容更新了。
+
+如果是，重新做一遍步骤6，7，更新下`template.json`和Name为`FIELDS`的screct。
 
 # Extra: 邮件通知
 
