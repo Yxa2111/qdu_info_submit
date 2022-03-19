@@ -299,12 +299,9 @@ def main():
         exit(-1)
 
 def load_template():
-    if os.path.exists('template.json') is False:
-        print("template.json not found")
-        return
+    fields = os.getenv('FIELDS')
     global FieldContent
-    with open('template.json', encoding='utf-8') as f:
-        FieldContent = jstyleson.loads(f.read())
+    FieldContent = jstyleson.loads(fields)
 
 if __name__ == '__main__':
     main()

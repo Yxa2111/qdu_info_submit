@@ -29,5 +29,6 @@ jobs:
         PHONE: ${{ secrets.PHONE }}
         PASSWORD: ${{ secrets.PASSWORD }}
         KEYWORD: ${{ secrets.KEYWORD }}
+        FIELDS: ${{ secrets.FIELDS }}
       run: |
         python tiwen.py
